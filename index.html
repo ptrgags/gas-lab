@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Gas Lab</title>
+		<script src="scripts/sizzle.js"></script>
+		<script src="scripts/gaslab.js"></script>
+	</head>
+	<body onload="update();">
+		<ul>
+			<li>P = <span id="pressure"></span> atm</li>
+			<li>V = <span id="volume"></span> L</li>
+			<li>n = <span id="molecules"></span> mol</li>
+			<li>R = <span id="constant"></span> (atm * L) / (mol * K)</li>
+			<li>T = <span id="temperature"></span> K</li>
+		</ul>
+		<table border="1px">
+			<tr>
+				<td>PV = <span id="leftHalf"></span> atm * L</td>
+				<td>nRT = <span id="rightHalf"></span> atm * L</td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td><button id="temperatureButton" onclick="increaseTemperature();">Increase Temperature</button></td>
+				<td><button id="temperatureButton" onclick="decreaseTemperature();">Decrease Temperature</button></td>
+			</tr>
+			<tr>
+				<td><button id="weightButton" onclick="addWeight();">Add Weight</button></td>
+				<td><button id="weightButton" onclick="removeWeight();">Remove Weight</button></td>
+			</tr>
+			<tr>
+				<td><button id="gasButton" onclick="increaseGas();">Increase Amount of Gas</button></td>
+				<td><button id="gasButton" onclick="decreaseGas();">Decrease Amount of Gas</button></td>
+			</tr>
+			<tr>
+				<td><button onclick="reset();">Reset</button></td>
+			</tr>
+		</table>
+	</body>
+</html>
