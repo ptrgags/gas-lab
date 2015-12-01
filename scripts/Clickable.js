@@ -1,4 +1,4 @@
-var Clickable = function(x, y, image) { //, width, height, color) {
+var Clickable = function(x, y, image) {
 	this.x = x;
 	this.y = y;
 	this.image = image;

@@ -3,14 +3,18 @@
 	<head>
 		<title>Gas Lab</title>
 		<link rel="stylesheet" href="styles/main.css" />
+        <script src="scripts/gagslib-dom.js"></script>
+        <script src="scripts/modules/images.js"></script>
 		<script src="scripts/Clickable.js"></script>
+        <script src="scripts/Button.js"></script>
 		<script src="scripts/dom.js"></script>
-		<script src="scripts/images.js"></script>
 		<script src="scripts/gaslab.js"></script>
-		<script src="scripts/load.js"></script>
+        <script src="scripts/load.js"></script>
 	</head>
 	<body onload="loadNext();">
 		<span id="loading">Loading...<br/></span>
-		<canvas id="canvas" width="640" height="480">Error: your browser does not support HTML5 Canvas!</canvas>
+		<div>
+            <canvas id="canvas" width="640" height="480">Error: your browser does not support HTML5 Canvas!</canvas>
+        </div>
 	</body>
 </html>

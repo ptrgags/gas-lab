@@ -1,20 +1,15 @@
-var imagesLoaded = 0;
-var sources = [
+gagslib.images.setSources([
 	"canisterBack",
 	"canisterFront",
 	"gasTank",
-	"greenButton",
-	"greenButtonOff",
+    "greenButton",
 	"blueButton",
 	"redButton",
+    "resetButton",
 	"weight"
-];
+]);
+gagslib.images.setOnComplete(gaslab.load);
 
-function loadNext() {
-	if (imagesLoaded < sources.length) {
-		loadImage(sources[imagesLoaded], loadNext);
-		imagesLoaded++;
-	}
-	else
-		load();
-}
+//Aliases
+var images = gagslib.images.images;
+var loadNext = gagslib.images.loadNext;
