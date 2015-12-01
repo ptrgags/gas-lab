@@ -1,9 +1,9 @@
-var Clickable = function(x, y, width, height, color) {
+var Clickable = function(x, y, image) { //, width, height, color) {
 	this.x = x;
 	this.y = y;
-	this.width = width;
-	this.height = height;
-	this.color = color;
+	this.image = image;
+	this.width = this.image.width;
+	this.height = this.image.height;
 	this.disabled = false;
 	this.disabledColor = "AAAAAA";
 	
@@ -17,9 +17,13 @@ var Clickable = function(x, y, width, height, color) {
 	
 	//Render the clickable object on the canvas
 	this.render = function(context) {
-		var oldStyle = context.fillStyle;
-		context.fillStyle = this.disabled ? this.disabledColor : this.color;
-		context.fillRect(this.x, this.y, this.width, this.height);
-		context.fillStyle = oldStyle;
+		if (!this.disabled)
+			context.drawImage(this.image, this.x, this.y);
+		else {
+			var oldStyle = context.fillStyle;
+			context.fillStyle = this.disabledColor;
+			context.fillRect(this.x, this.y, this.width, this.height);
+			context.fillStyle = oldStyle;
+		}
 	}
 }

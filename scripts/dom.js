@@ -1,15 +1,15 @@
 //Get an element by ID
-var getById = function(id) {
+function getById(id) {
 	return document.getElementById(id);
 }
 
 //Get elements by class name
-var getByClass = function(className) {
+function getByClass(className) {
 	return document.getElementsByClassName(className);
 }
 
 //Click event
-var click = function(evt) {
+function click(evt) {
 	var canvas = document.getElementById("canvas");
 	var rect = canvas.getBoundingClientRect();
 	var x = evt.clientX - rect.left;

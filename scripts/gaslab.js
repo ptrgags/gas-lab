@@ -9,7 +9,7 @@ var MAX_GAS_STEPS = 50;
 var VOLUME_MAX = 5.00;
 var VOLUME_MIN = 1.00;
 var WEIGHT_X1 = 500;
-var WEIGHT_X2 = 144;
+var WEIGHT_X2 = 128;
 var WEIGHT_Y1 = 480;
 var WEIGHT_Y2 = 288;
 
@@ -24,127 +24,154 @@ var weights = 0;
 var gasSteps = 0;
 
 var clickables = [];
-
 var weightStack = [];
 var chamberWeightStack = [];
+var controls = {};
 
-var load = function() {
+//Load the gas lab
+function load() {
+	getById("loading").innerHTML = "";
+	createClickables();
+	createWeights();
+	render();
+	canvas.addEventListener("click", click);
+}
 
-	var temperatureUp = new Clickable(32, 64, 32, 32, "#FF0000");
+//Create clickables on the screen
+function createClickables() {
+	var temperatureUp = new Clickable(32, 304, images["redButton"]);
 		temperatureUp.onClick = function() {
 			increaseTemperature();
-			temperatureUp.disabled = temperatureSteps === MAX_TEMPERATURE_STEPS;
-			temperatureDown.disabled = temperatureSteps === 0;
+			updateControls();
 			render();
 		}
-	var temperatureDown = new Clickable(32, 128, 32, 32, "#0000FF");
+		clickables.push(temperatureUp);
+	var temperatureDown = new Clickable(32, 368, images["blueButton"]);
 		temperatureDown.onClick = function() {
 			decreaseTemperature();
-			temperatureUp.disabled = temperatureSteps === MAX_TEMPERATURE_STEPS;
-			temperatureDown.disabled = temperatureSteps === 0;
+			updateControls();
 			render();
 		}
-	var gasRelease = new Clickable(80, 32, 16, 16, "#00FF00");
+		clickables.push(temperatureDown);
+	var gasRelease = new Clickable(160, 0, images["greenButton"]);
 		gasRelease.disabled = true;
 		gasRelease.onClick = function() {
 			decreaseGas();
-			gasTank.disabled = gasSteps === MAX_GAS_STEPS;
-			gasRelease.disabled = gasSteps === 0;
+			updateControls();
 			render();
 		}
-	var gasTank = new Clickable(320, 128, 64, 256, "#00FFFF");
+		clickables.push(gasRelease);
+	var gasTank = new Clickable(352, 0, images["gasTank"]);
 		gasTank.onClick = function() {
 			increaseGas();
-			gasTank.disabled = gasSteps === MAX_GAS_STEPS;
-			gasRelease.disabled = gasSteps === 0;
+			updateControls();
 			render();
 		}
-	var resetButton = new Clickable(0, 0, 64, 32, "#FFFFFF");
+		clickables.push(gasTank);
+	var resetButton = new Clickable(0, 0, images["greenButtonOff"]);
 		resetButton.onClick = function() {
 			reset();
 			render();
-		}
-	var weight1 = new Clickable(WEIGHT_X1, WEIGHT_Y1 - 48, 96, 48, "#999999");
+		} 
+		clickables.push(resetButton);
+	controls = {
+		temperatureUp : temperatureUp,
+		temperatureDown : temperatureDown,
+		gasRelease : gasRelease,
+		gasTank : gasTank,
+		resetButton : resetButton
+	};
+}
+
+//Create weights on the screen
+function createWeights() {
+	var weight1 = new Clickable(WEIGHT_X1, WEIGHT_Y1 - 48, images["weight"]);
 		weight1.position = 0;
 		weight1.onClick = function() {
 			switchStack(weight1.position);
 			render();
 		}
-	var weight2 = new Clickable(WEIGHT_X1, WEIGHT_Y1 - 97, 96, 48, "#999999");
+		weightStack.push(weight1);
+		clickables.push(weight1);
+	var weight2 = new Clickable(WEIGHT_X1, WEIGHT_Y1 - 96, images["weight"]);
 		weight2.position = 0;
 		weight2.onClick = function() {
 			switchStack(weight2.position);
 			render();
 		}
-	var weight3 = new Clickable(WEIGHT_X1, WEIGHT_Y1 - 146, 96, 48, "#999999");
+		weightStack.push(weight2);
+		clickables.push(weight2);
+	var weight3 = new Clickable(WEIGHT_X1, WEIGHT_Y1 - 144, images["weight"]);
 		weight3.position = 0;
 		weight3.onClick = function() {
 			switchStack(weight3.position);
 			render();
 		}
-	
-	weightStack.push(weight1);
-	weightStack.push(weight2);
-	weightStack.push(weight3);
-	
-	canvas.addEventListener("click", click);
-	
-	clickables = [temperatureUp, temperatureDown, gasRelease, gasTank, resetButton, weight1, weight2, weight3];
-	render();
+		weightStack.push(weight3);
+		clickables.push(weight3);
 }
 
-//Render objects onto the screen
-var render = function() {
+//Render objects on the screen
+function render() {
 	var canvas = getById("canvas");
 	var context = canvas.getContext("2d");
 	context.clearRect(0, 0, canvas.width, canvas.height);
-	context.fillRect(128, 128, 128, 256);
+	context.drawImage(images["canisterBack"], 96, 0);
 	for (var i = 0; i < clickables.length; i++)
 		clickables[i].render(context);
-	context.fillText("P = " + pressure.toPrecision(3) + " atm", 400, 100);
-	context.fillText("V = " + volume.toPrecision(3) + " L", 400, 110);
-	context.fillText("n = " + molecules.toPrecision(3) + " mol", 400, 120);
-	context.fillText("T = " + temperature.toPrecision(3) + " K", 400, 130);
+	context.drawImage(images["canisterFront"], 96, 0);
+	displayVariables(context, 480, 100);
+}
+
+//Display variables on the screen
+function displayVariables(context, x, y) {
+	context.fillRect(x - 4, y - 10 - 4, 100, 50);
+	context.fillStyle = "#FFFFFF";
+		context.fillText("P = " + pressure.toPrecision(3) + " atm", x, y);
+		context.fillText("V = " + volume.toPrecision(3) + " L", x, y + 10);
+		context.fillText("n = " + molecules.toPrecision(3) + " mol", x, y + 10 * 2);
+		context.fillText("T = " + temperature.toPrecision(3) + " K", x, y + 10 * 3);
+	context.fillStyle = "#000000";
 }
 
 //Increase the temperature one notch
-var increaseTemperature = function() {
+function increaseTemperature() {
 	temperatureSteps++;
 	changeTemperature(TEMPERATURE_INCREMENT);
 }
 
 //Decrease the temperature one notch
-var decreaseTemperature = function() {
+function decreaseTemperature() {
 	temperatureSteps--;
 	changeTemperature(-TEMPERATURE_INCREMENT);
 }
 
 //Increase the amount of gas
-var increaseGas = function() {
+function increaseGas() {
 	gasSteps++;
 	changeGasAmount(GAS_INCREMENT);
 }
 
 //Decrease the amount of gas
-var decreaseGas = function() {
+function decreaseGas() {
 	gasSteps--;
 	changeGasAmount(-GAS_INCREMENT);
 }
 
 //Add a weight to the plunger
-var addWeight = function() {
+function addWeight() {
 	weights++;
 	changePressure(PRESSURE_INCREMENT);
 }
 
 //Remove a weight from the plunger
-var removeWeight = function() {
+function removeWeight() {
 	weights--;
 	changePressure(-PRESSURE_INCREMENT);
 }
 
 //Change the temperature
-var changeTemperature = function(change) {
+function changeTemperature(change) {
 	var t1 = temperature;
 	var t2 = temperature + change;
 	var v1 = volume;
@@ -163,7 +190,7 @@ var changeTemperature = function(change) {
 }
 
 //Change the number of moles of gas
-var changeGasAmount = function(change) {
+function changeGasAmount(change) {
 	var n1 = molecules;
 	var n2 = molecules + change;
 	var v1 = volume;
@@ -174,7 +201,6 @@ var changeGasAmount = function(change) {
 	if (v2 >= VOLUME_MAX) {
 		v2 = VOLUME_MAX;
 		p2 = molecules * GAS_CONSTANT * temperature / v2;
-		//p2 = p1 * v1 / v2;
 	}
 	
 	molecules = n2;
@@ -183,7 +209,7 @@ var changeGasAmount = function(change) {
 }
 
 //Change the pressure
-var changePressure = function(change) {
+function changePressure(change) {
 	var p1 = pressure;
 	var p2 = pressure + change;
 	var v1 = volume;
@@ -199,7 +225,10 @@ var changePressure = function(change) {
 }
 
 //Reset the screen
-var reset = function() {
+function reset() {
+	updateControls();
+	resetWeights();
+	
 	pressure = 1.50;
 	volume = 1.50;
 	molecules = .100;
@@ -208,15 +237,29 @@ var reset = function() {
 	temperatureSteps = 7;
 	weights = 0;
 	gasSteps = 0;
-	load();
 }
 
-var switchStack = function(position) {
+//update controls
+function updateControls() {
+	controls.temperatureUp.disabled = temperatureSteps === MAX_TEMPERATURE_STEPS;
+	controls.temperatureDown.disabled = temperatureSteps === 0;
+	controls.gasTank.disabled = gasSteps === MAX_GAS_STEPS;
+	controls.gasRelease.disabled = gasSteps === 0;
+}
+
+//Reset weight positions
+function resetWeights() {
+	while (chamberWeightStack.length > 0)
+		switchStack(1);
+}
+
+//Switch weights from stack to stack
+function switchStack(position) {
 	if (position === 0) {
 		var length = chamberWeightStack.length;
 		var weight = weightStack.pop();
 			weight.x = WEIGHT_X2;
-			weight.y = WEIGHT_Y2 - 48 * (length + 1) - length;
+			weight.y = WEIGHT_Y2 - 48 * (length + 1);
 			weight.position = 1;
 		chamberWeightStack.push(weight);
 		addWeight();
@@ -225,25 +268,9 @@ var switchStack = function(position) {
 		var length = weightStack.length;
 		var weight = chamberWeightStack.pop();
 			weight.x = WEIGHT_X1;
-			weight.y = WEIGHT_Y1 - 48 * (length + 1) - length;
+			weight.y = WEIGHT_Y1 - 48 * (length + 1);
 			weight.position = 0;
 		weightStack.push(weight);
 		removeWeight();
 	}
 }
-
-/*
-//Update the variables on the screen
-var update = function() {
-	
-	var buttons = getByClass("temperatureButton");
-		buttons[0].disabled = temperatureSteps === MAX_TEMPERATURE_STEPS;
-		buttons[1].disabled = temperatureSteps === 0;
-	buttons = getByClass("weightButton");
-		buttons[0].disabled = weights === MAX_WEIGHTS;
-		buttons[1].disabled = weights === 0;
-	buttons = getByClass("gasButton");
-		buttons[0].disabled = gasSteps === MAX_GAS_STEPS;
-		buttons[1].disabled = gasSteps === 0;
-}
-*/
