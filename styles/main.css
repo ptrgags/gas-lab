@@ -1,16 +1,16 @@
-body {
-	margin: 0px;
-	overflow: hidden;
-    background-color: #808080;
+﻿body{
+    background-color: #272D70;
+    color: white;
+    overflow: hidden;
 }
-canvas {
-	background-color: #CCCCCC;
-    background-image: url('../images/background.png');
-    border: 2px solid black;
-    border-radius: 10px;
-    -webkit-user-select: none;
+
+canvas{
+    border: 1px solid white;
+    float: left;
 }
-div {
-    text-align: center;
-    -webkit-user-select: none;
+
+#controls {
+    border: 1px solid white;
+    min-width: 200px;
+    min-height: 480px;
 }
